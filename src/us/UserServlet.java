@@ -11,6 +11,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import Dao.SinhVienDao;
+import model.SinhVien;
+
+
+
 //import Dao.SinhVienDao;
 //import dao.UserDao;
 //import model.User;
@@ -20,9 +25,10 @@ import javax.servlet.http.HttpServletResponse;
 public class UserServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 //	private UserDao userDao;
-	
+	SinhVienDao sinhVienDao ;
 	public void init() {
-        
+		sinhVienDao = new SinhVienDao();
+      
     }
        
     /**
@@ -45,11 +51,8 @@ public class UserServlet extends HttpServlet {
                 case "/profile":
                     showProfile(request, response);
                     break;
-                case "/register":
+                case "/showregister":
                 	showEditForm(request, response);
-                    break;
-                case "/login":
-                	Login(request, response);
                     break;
                 default:
                     ShowLogin(request, response);
@@ -58,10 +61,37 @@ public class UserServlet extends HttpServlet {
         
 	}
 	
-	private void Login(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.sendRedirect("profile");
-		
+		String action = request.getServletPath();
+		switch (action) {
+        case "/register":
+        	register(request, response);
+            break;
+        case "/login":
+        	Login(request, response);
+            break;
+        default:
+            ShowLogin(request, response);
+            break;
+    }
+	}
+	
+	private void Login(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		// TODO Auto-generated method stub
+		String email = request.getParameter("email");
+		String pass = request.getParameter("pwd");
+		SinhVien sinhVien = sinhVienDao.findByEmail(email);
+		System.out.println(pass);
+		System.out.println(sinhVien.getPassword());
+		if(sinhVien !=null && sinhVien.getPassword().equals(pass) ) {
+			RequestDispatcher dispatcher = request.getRequestDispatcher("Profile.jsp");
+			request.setAttribute("user", sinhVien);
+			dispatcher.forward(request, response);
+		}else {
+			response.sendRedirect("loginForm");
+		}
 	}
 
 	private void showProfile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -78,33 +108,18 @@ public class UserServlet extends HttpServlet {
 	}
 	
 
-	
-	
-	
-
-
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	
-	private void showNewForm(HttpServletRequest request, HttpServletResponse response)
-		    throws ServletException, IOException {
-//		        RequestDispatcher dispatcher = request.getRequestDispatcher("user-form.jsp");
-//		        dispatcher.forward(request, response);
+	private void register(HttpServletRequest request, HttpServletResponse response) throws IOException {
+			String pass = request.getParameter("psw");
+			String name = request.getParameter("username");
+	        String email = request.getParameter("email");
+	        String country = request.getParameter("country");
+	        Random rd = new Random();
+	        int number = rd.nextInt();
+	        SinhVien sinhVien = new SinhVien(number, email, name, pass, country);
+	        sinhVienDao.addSinhVien(sinhVien);
+		response.sendRedirect("showlogin");
 	}
 	
-	private void register(HttpServletRequest request, HttpServletResponse response)
-		    throws  IOException {
-//		        String name = request.getParameter("name");
-//		        String email = request.getParameter("email");
-//		        String country = request.getParameter("country");
-//		        Random rd = new Random();
-//		        int number = rd.nextInt();  // tráº£ vá»� 1 sá»‘ nguyÃªn báº¥t ká»³
-//		        User newUser = new User(number,name, email, country);
-//		        userDao.addUser(newUser);
-//		        response.sendRedirect("list");
-		    }
 	
 	private void ShowLogin(HttpServletRequest request, HttpServletResponse response)
 		    throws IOException, ServletException {

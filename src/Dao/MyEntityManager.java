@@ -10,7 +10,7 @@ public class MyEntityManager {
 	private EntityManager em;
 	
 	private MyEntityManager() {
-		em = Persistence.createEntityManagerFactory("jsp-servlet-hibernate-mongodb-crud-exmaple")
+		em = Persistence.createEntityManagerFactory("servlet_login")
 				.createEntityManager();
 	}
 	

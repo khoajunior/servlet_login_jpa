@@ -27,7 +27,7 @@
     </div>
      
       <div>
-      	<a href="register">create account</a>
+      	<a href="showregister">create account</a>
       </div>
     
     <button type="submit" class="btn btn-default">Submit</button>
